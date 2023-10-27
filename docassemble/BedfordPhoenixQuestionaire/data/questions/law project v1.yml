@@ -1,0 +1,487 @@
+features:
+  css: bpstyles.css
+  question back button: True
+  navigation back button: False
+---
+images:
+  logo: bedfordphoenixlogo.png
+---
+metadata:
+  title: Bedford Phoenix Privacy Act Advisor
+  authors:
+    - name: Ahmad Omar, Belinda Huynh, Caitlyn Pascoe, Cameron Young, Chelsea Vigants, Sam Fellenberg
+      organization: Flinders University
+  pre: | 
+    :logo:
+---
+# Keep this section - it was provided with the marking guide.
+default screen parts:
+  post: |
+    <div style="display: flex; height: 200px; align-items: flex-end; flex-direction: row-reverse">
+    <div style="margin: 5px"><img src="https://staff.flinders.edu.au/etc.clientlibs/flinders/clientlibs/clientlib-site/resources/images/flinderuni_main_logo_black.png" height="40">
+    </div>
+    <div style="margin: 5px; text-align: right">
+    <cite><small><i>
+    Developed by Flinders University in collaboration with Bedford Phoenix Inc.
+    </i></small></cite>
+    </div>
+    </div>
+---
+# Welcome Screen
+mandatory: True
+question: Bedford Phoenix Privacy Act Advisor
+subquestion: |
+
+  Welcome to the Bedford Phoenix Privacy Act Advisor.
+
+  Bedford Phoenix collects infomation about clients, employees, volunteers and supporters. As such, Bedford Phoenix must abide by Australian Privacy Law in handling documents that may contain protected information. This application aims to help differentiate between personal and sensitive information collected by Bedford Phoenix and direct the user on appropriate handling of information. 
+
+  Personal information is defined as information that can be used to identify an individual. 
+
+  Sensitive information is considered to be any information that within the context of its unveiling could give rise to a negative bias or prejudice towards a person, defined under section 6 of the *Privacy Act 1988*. Due to the vulnerability of this information, it is highly protected through laws established by *The Privacy Act 1988* and the Australian Privacy Principles. 
+  
+  Important: Health Information will always constitue Sensitive Infomation per *The Privacy Act 1988*. 
+  
+  *Disclaimer: 
+  The contents of this application does not constitute legal advice. If advice is required, users should consult a legal professional for specific advice related to their situation.*
+    
+fields:
+  - By continuing, you have read and acknowledged this disclaimer.: disclaimer_read
+    datatype: yesnowide    
+    required: True
+---
+# Employee or Client?
+Mandatory: True
+question: Who does the document concern?
+field: user_choice
+fields:
+  - note: Information concerning Clients must be handled differently than information collected by Employees.
+  - Client: client
+    datatype: yesnowide
+    uncheck others: 
+      - employee
+  - Employee: employee
+    datatype: yesnowide
+    uncheck others:
+      - client
+---
+# Code for processing choices (client/employee) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if user_choice == client: 
+    client_screen
+  if user_choice == employee: 
+    employee_screen
+---
+# If the user chooses 'client':
+question: Client Document
+sets: client_screen
+field: client_screen
+subquestion: |
+  People wishing to take advantage of Bedford Phoenix’s services will need to have an NDIS plan, which will need to be provided to Bedford Phoenix. 
+  
+  Along with this, other documentation that contains sensitive or personal information may also be collected. The following will determine whether information collected is sensitive or personal, and how it should be handled accordingly.
+
+fields:
+  - Continue: client2
+    datatype: yesnowide
+---
+# Code for processing the choice (client) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if client_screen == client2:
+    client_screen2
+---
+# If the user chooses 'employee':
+question: Does the documentation concern an Employee rather than an a Volunteer/Supporter?
+sets: employee_screen
+field: employee_screen
+subquestion: |
+  As Bedford also handles documents regarding Employees, Volunteers, and Supporters, these documents must also comply with Privacy Laws regarding Personal and Sensitive Information.
+  
+fields:
+  - Employee: employee2
+    datatype: yesnowide
+    uncheck others:
+      - volunteer
+  - Volunteer/Supporter: volunteer
+    datatype: yesnowide
+    uncheck others:
+      - employee2
+---
+# Code for processing choices (employee/volunteer) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if employee_screen == employee2:
+    employee_screen2
+  if employee_screen == volunteer:
+    volunteer_screen
+---
+# If the user chooses 'employee' again
+question: Does the document include any of the following information
+sets: employee_screen2
+field: employee_screen2
+subquestion: |
+  People being employed by Bedford Phoenix are doing so by using Bedford Phoenix services on offer. To use these services, a person must submit documents which contain both sensitive and personal information.
+
+  Under the Bedford Phoenix Service Agreement, it is stated that Bedford Phoenix is required to collect Personal Information in accordance with their Privacy Policy.
+
+  Information regarding employment will likely include both personal and sensitive information.
+  
+  Does the document include information such as:
+  * Racial or Ethnic Origin
+  * Health Record or Information
+  * Religious Beliefs
+  * Criminal Record
+  * Professional or Trade Union Memberships
+  * Any other information that could give rise to a negative bias or prejudice towards a person?
+
+  Resources
+  * Bedford Phoenix Inc. Bedford NDIS Service Agreement (Service Agreement, November 2021).
+  * Bedford Phoenix Inc. Human Recourses Policy (Privacy Policy, March 2019).
+  * Legalisation includes - Privacy Amendment (Enhancing Privacy Protection) Bill 2012; Privacy Act 1988; Privacy Amendment (Notifiable Data Breaches) Act 2017; APP 1-13 under Privacy Act 1988.
+  
+fields:
+  - Yes: sensitive
+    datatype: yesnowide
+    uncheck others:
+      - personal
+  - No: personal
+    datatype: yesnowide
+    uncheck others:
+      - sensitive
+---
+# Code for processing choices (employee/volunteer) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if employee_screen2 == sensitive:
+    sensitive_screen
+  if employee_screen2 == personal:
+    personal_screen
+---
+# If the user chooses 'volunteer'
+question: Does the document include information such as
+sets: volunteer_screen
+field: volunteer_screen
+subquestion: |
+  People who are supporters or volunteers of Bedford will likely have to fill out documentation applying for their role. Documents such as these will likely include personal information.
+  
+  Does the document include information such as:
+  a. Name
+  b. Date of birth
+  c. Address
+  d. Passport
+  e. Identification documents
+  f. Drivers Licence
+  g. Financial Data
+  
+fields:
+  - Yes: personal2
+    datatype: yesnowide
+    uncheck others: 
+      - final
+  - No: final
+    datatype: yesnowide
+    uncheck others: 
+      - personal2
+---
+# Code for processing choices (employee/volunteer) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if volunteer_screen == personal2:
+    personal_screen
+  if volunteer_screen == final:
+    final_screen
+---
+# Continuing on from client_screen
+Question: Is the Document an NDIS Plan or a NDIS Supporting Document?
+sets: client_screen2
+field: client_screen2
+subquestion: | 
+
+ An NDIS Plan is the primary document that is required to be submitted to Bedford Phoenix for consideration of services. This document will always contain sensitive and personal information.
+ As well as the NDIS Document, any applicable NDIS Supporting Documents will always contain sensitive and personal information.
+ 
+ The sensitive information contained within the NDIS document includes:
+ * The clients disability
+ * Details regarding the cause of the clients disability
+ * Information surrounding immediate family members who also have a disability
+ * Details about past disability treatments/support/interventions
+ * Details surrounding the clients disability 
+ * Specific client infomation such as NDIS participant's unique identifiers
+ 
+fields:
+  - Yes: sensitive2
+    datatype: yesnowide
+    uncheck others:
+      - client3
+  - No: client3
+    datatype: yesnowide
+    uncheck others:
+      - sensitive2
+---
+# Code for processing the choice (client) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if client_screen2 == sensitive2:
+    sensitive_screen
+  if client_screen2 == client3:
+    client_screen3
+---
+Question: Is this a Care and Needs Scale Document or to provide evidence of a disability
+sets: client_screen3
+field: client_screen3
+subquestion: | 
+  The NDIS application form also requires evidence of a disability. This can be done by filling out information in the NDIS application form, or by submitting a Care and Needs Scale. When submitting disability evidence via the NDIS application or a Care and Needs Scale, sensitive and personal information will always be present.
+  
+  These include details of how the following are affected by your current disability
+  * Self-care
+  * Learning and communicating
+  * Self-management
+  * Assistance required from other people, equipment, technology or environment
+  * Medication 
+  * Interpersonal relationships
+  * Bodily function
+  * Emotional support
+  * Any information pertaining to the Clients disability
+   
+fields:
+  - Yes: sensitive3
+    datatype: yesnowide
+    uncheck others:
+      - client4
+  - No: client4
+    datatype: yesnowide
+    uncheck others:
+      - sensitive3
+---
+# Code for processing the choice (client) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if client_screen3 == sensitive3:
+    sensitive_screen
+  if client_screen3 == client4:
+    client_screen4
+---
+Question: Is the document listed below?
+sets: client_screen4
+field: client_screen4
+subquestion: | 
+ Additionally, the following documents collected by Bedford will always contain both sensitive and personal information
+ 
+ * A complete list of the current medications you are prescribed
+ * Positive Behaviour Support Plan
+ * Epilepsy Management Plan
+ * Asthma Management Plan
+ * Allergy Management Plan
+ * Meal Time Management Plan
+ * Diabetes Management Plan
+ * Health Care Plan, and / or Mental Health Care Plan
+ 
+fields:
+  - Yes: sensitive4
+    datatype: yesnowide
+    uncheck others:
+      - client5
+  - No: client5
+    datatype: yesnowide
+    uncheck others:
+      - sensitive4
+---
+# Code for processing the choice (client) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if client_screen4 == sensitive4:
+    sensitive_screen
+  if client_screen4 == client5:
+    client_screen5
+---
+Question: Does the document contain any of the below infomation?
+sets: client_screen5
+field: client_screen5
+subquestion: | 
+ Any information containing the Clients medical information, per s X of X, is sensitive information, such as:
+ 
+  a. Scripts
+  b. X-rays
+  c. Fingerprint
+  d. Blood type
+  e. Medications
+  f. Retinal images
+  g. Photographs
+
+fields:
+  - Yes: sensitive5
+    datatype: yesnowide
+    uncheck others:
+      - client6
+  - No: client6
+    datatype: yesnowide
+    uncheck others:
+      - sensitive5
+---
+# Code for processing the choice (client) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if client_screen5 == sensitive5:
+    sensitive_screen
+  if client_screen5 == client6:
+    client_screen6
+---
+Question: Does the document contain information pertaining to the Clients Disability?
+sets: client_screen6
+field: client_screen6
+subquestion: | 
+  Section X of the X Act states information that pertains to a persons disability is sensitive information.
+
+fields:
+  - Yes: sensitive6
+    datatype: yesnowide
+    uncheck others:
+      - client7
+  - No: client7
+    datatype: yesnowide
+    uncheck others:
+      - sensitive6
+---
+# Code for processing the choice (client) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if client_screen6== sensitive6:
+    sensitive_screen
+  if client_screen6== client7:
+    client_screen7
+---
+Question: Does the document contain any of the following information about the client?
+sets: client_screen7
+field: client_screen7
+subquestion: | 
+  Any information containing the Clients Orientation is considered sensitive information per s X of X.
+
+  a. Sexual Orientation
+  b. Racial Ethnicity
+  c. Religious Orientation
+  d. Aboriginal  or Torres Strait Islander status
+  
+fields:
+  - Yes: sensitive7
+    datatype: yesnowide
+    uncheck others:
+      - client8
+  - No: client8
+    datatype: yesnowide
+    uncheck others:
+      - sensitive7
+---
+# Code for processing the choice (client) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if client_screen7== sensitive7:
+    sensitive_screen
+  if client_screen7== client8:
+    client_screen8
+---
+Question: Does the document contain any of the following information?
+sets: client_screen8
+field: client_screen8
+subquestion: | 
+  Any information concerning the Client that is not sensitive, may be considered personal infomation, such as
+ 
+  * Name
+  * Address
+  * Date of Birth
+  * Passport
+  * Identification documents
+  * Passport
+  * Drivers License 
+  * Financial Data 
+  * Phone Number
+  * Email
+  * Age
+
+fields:
+  - Yes: personal3
+    datatype: yesnowide
+    uncheck others:
+      - final2
+  - No: final2
+    datatype: yesnowide
+    uncheck others:
+      - personal3
+---
+# Code for processing the choice (client) and directing the user to the appropriate screen
+Mandatory: True
+code: |
+  if client_screen8== personal3:
+    sensitive_screen
+  if client_screen8== final2:
+    final_screen
+---
+Question: Final end screen - Neither personal or private information
+sets: final_screen
+subquestion: | 
+  From the information you have provided, this document may not include personal or sensitive information.
+  
+  However, any information that you think may be private, has the potential to identify or could lead to the negative bias or prejudice of an individual or those associated with the individual should be treated as personal information.
+  Please Refer to the Information Privacy Principles Instruction to see appropriate collection, storage, access, use and disclosure of personal information.
+  When information is no longer needed, there is an obligation to destroy or de-personalise personal information via the Archives Act 1983.
+  In the event of a Privacy Breach, please refer to Bedford Phoenix's Data Breach response plan.
+  
+  A Privacy Breach can include:
+  Passing on sensitive information to another person without appropriate authorisation.
+  Loss or misplacement of a file or written information containing personal or personally identifiable information, including via email, USB flash drive, portable hard drives, laptops and so on.
+  Inappropriate or unauthorised use or access of a person’s private information.
+  Loss or theft of passwords or other confidential access data.
+  Cyber activity such as hacking of information or unauthorised computer access.
+  
+  For further Information:
+  Consult a legal professional
+  The Bedford Group Human Resources Policy - HR03 Privacy, Dignity, Confidentiality and Data Integrity.
+
+buttons:
+  - Exit: exit
+  - Restart: restart
+---
+Question: Sensitive Information
+sets: sensitive_screen
+subquestion: | 
+  Based on the answers you have provided; we believe you are dealing with sensitive information. 
+  Sensitive information is a subset of personal information that is afforded a higher level of privacy protection.
+  
+  Common examples of sensitive information include an individual’s religious beliefs, ethnic origin or sexual orientation. In particular, for the purposes of Bedford’s services, an individual’s health information – including their disability – is considered sensitive information under the law.[31] Given its confidential nature, sensitive information must be handled with the utmost care and security. Sensitive information must be managed in accordance with the rules set out in the Privacy Act 1988 and the Australian Privacy Principles.
+  
+  The rules for the collection, management and use of sensitive information are outlined below. For further information on the Australian Privacy Principles please click here (link)[32]
+  
+  Contents
+  1. Collection
+  2. Storage and Security
+  3. Destruction or De-Identification
+  4. Use and Disclosure
+  5. Consent
+  6. Access and Correction
+
+buttons:
+  - Exit: exit
+  - Restart: restart
+---
+Question: Personal Information
+sets: personal_screen
+subquestion: |
+  Based on the answers you have provided; we believe you are dealing with personal information. Personal information is information relating to a person whose identity is apparent or may reasonably be discovered.[1]
+  
+  Common examples of personal information include an individual’s name, address, and date of birth as well as financial or employment details.[2] Given its private nature, care and control must be exercised when handling this information. Personal information must be managed in accordance with the rules set out in the Privacy Act 1988 and the Australian Privacy Principles.
+  
+  The rules for the collection, management and use of personal information are outlined below. For further information on the Australian Privacy Principles please click here (link)[3]
+  
+  Contents
+  1. Collection
+  2. Storage and Security
+  3. Destruction or De-Identification
+  4. Use and Disclosure
+  5. Consent
+  6. Access and Correction
+  
+buttons:
+  - Exit: exit
+  - Restart: restart
+---
